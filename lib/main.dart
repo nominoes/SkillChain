@@ -1,7 +1,10 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'core/theme.dart';
-import 'screens/auth/login_screen.dart';
+import 'providers/auth_provider.dart';
+import 'providers/app_provider.dart';
+import 'screens/root_screen.dart';
 
 void main() {
   runApp(const SkillChainApp());
@@ -12,11 +15,16 @@ class SkillChainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'SkillChain',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      home: const LoginScreen(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => AppProvider()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+        home: const RootScreen(),
+      ),
     );
   }
 }

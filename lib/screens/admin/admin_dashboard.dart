@@ -1,5 +1,7 @@
-// lib/screens/admin/admin_dashboard.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
+import 'root_screen.dart';
 
 class AdminDashboard extends StatelessWidget {
   const AdminDashboard({super.key});
@@ -7,8 +9,22 @@ class AdminDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Admin Dashboard')),
-      body: const Center(child: Text('Admin Dashboard — build module next')),
+      appBar: AppBar(
+        title: const Text('Admin Dashboard'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              context.read<AuthProvider>().logout();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const RootScreen()),
+              );
+            },
+          ),
+        ],
+      ),
+      body: const Center(child: Text('Admin functionalities go here')),
     );
   }
 }

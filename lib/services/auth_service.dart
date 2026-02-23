@@ -1,13 +1,34 @@
-// lib/services/auth_service.dart
 class AuthService {
-  /// Mock login. Replace with actual FirebaseAuth call later.
-  Future<bool> login(String email, String password) async {
-    await Future.delayed(const Duration(milliseconds: 700));
-    // simple mock rule: accept any non-empty credentials
-    return email.isNotEmpty && password.isNotEmpty;
+  final Map<String, Map<String, String>> _users = {
+    "student@skillchain.com": {
+      "password": "1234",
+      "role": "student",
+    },
+    "startup@skillchain.com": {
+      "password": "1234",
+      "role": "startup",
+    },
+    "admin@skillchain.com": {
+      "password": "1234",
+      "role": "admin",
+    },
+  };
+
+  Map<String, String>? login(String email, String password) {
+    if (_users.containsKey(email) &&
+        _users[email]!["password"] == password) {
+      return {
+        "email": email,
+        "role": _users[email]!["role"]!,
+      };
+    }
+    return null;
   }
 
-  Future<void> logout() async {
-    await Future.delayed(const Duration(milliseconds: 300));
+  void register(String email, String password, String role) {
+    _users[email] = {
+      "password": password,
+      "role": role,
+    };
   }
 }

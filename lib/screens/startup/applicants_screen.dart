@@ -1,47 +1,27 @@
+// lib/screens/startup/applicants_screen.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/app_provider.dart';
 
 class ApplicantsScreen extends StatelessWidget {
-  const ApplicantsScreen({super.key});
+  final task;
+  const ApplicantsScreen({super.key, required this.task});
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> applicants = [
-      {
-        'name': 'Aisha',
-        'task': 'Design Instagram Post',
-        'rating': 4.5,
-      },
-      {
-        'name': 'Rahul',
-        'task': 'Build Login UI',
-        'rating': 4.2,
-      },
-    ];
-
+    final applications = context.watch<AppProvider>().getApplicationsForTask(task.id);
     return Scaffold(
       appBar: AppBar(title: const Text('Applicants')),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: applicants.length,
+      body: applications.isEmpty
+          ? const Center(child: Text("No applicants yet"))
+          : ListView.builder(
+        itemCount: applications.length,
         itemBuilder: (context, index) {
-          final applicant = applicants[index];
-
+          final app = applications[index];
           return Card(
             child: ListTile(
-              title: Text(applicant['name'] as String),
-              subtitle: Text(
-                '${applicant['task']} • Rating: ${applicant['rating']}',
-              ),
-              trailing: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Applicant Approved (mock)'),
-                    ),
-                  );
-                },
-                child: const Text('Approve'),
-              ),
+              title: Text("Applicant ID: ${app.applicantId}"),
+              subtitle: Text("Status: ${app.status}"),
             ),
           );
         },

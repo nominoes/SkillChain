@@ -1,7 +1,8 @@
-// lib/screens/auth/login_screen.dart
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
-import 'role_selection_screen.dart';
+import '../student/student_dashboard.dart';
+import '../startup/startup_dashboard.dart';
+import '../admin/admin_dashboard.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -11,103 +12,68 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailCtrl = TextEditingController();
-  final _passCtrl = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-  bool _loading = false;
+  final emailCtrl = TextEditingController();
+  final passCtrl = TextEditingController();
+  final AuthService _auth = AuthService();
 
-  @override
-  void dispose() {
-    _emailCtrl.dispose();
-    _passCtrl.dispose();
-    super.dispose();
-  }
-
-  Future<void> _handleLogin() async {
-    if (!_formKey.currentState!.validate()) return;
-    setState(() => _loading = true);
-    final ok = await AuthService().login(_emailCtrl.text.trim(), _passCtrl.text);
-    setState(() => _loading = false);
-
-    if (ok) {
-      // demo flow: go to role selection (backend will later decide role)
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const RoleSelectionScreen()),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login failed (mock)')));
+  void login() {
+    if (emailCtrl.text.isEmpty || passCtrl.text.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Enter all details")));
+      return;
     }
-  }
 
-  void _demo() {
-    // quick bypass — direct to role selection for demo
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const RoleSelectionScreen()),
-    );
+    final result = _auth.login(emailCtrl.text, passCtrl.text);
+
+    if (result == null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Invalid credentials")));
+      return;
+    }
+
+    switch (result["role"]) {
+      case "student":
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (_) => const StudentDashboard()));
+        break;
+      case "startup":
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (_) => const StartupDashboard()));
+        break;
+      case "admin":
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (_) => const AdminDashboard()));
+        break;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final primary = Theme.of(context).primaryColor;
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  Text('SkillChain', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: primary)),
-                  const SizedBox(height: 8),
-                  const Text('Micro-internships • Skill badges', style: TextStyle(fontSize: 14)),
-                  const SizedBox(height: 28),
-
-                  TextFormField(
-                    controller: _emailCtrl,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(hintText: 'Email', prefixIcon: Icon(Icons.email)),
-                    validator: (v) {
-                      if (v == null || v.trim().isEmpty) return 'Enter email';
-                      if (!v.contains('@')) return 'Enter valid email';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 14),
-
-                  TextFormField(
-                    controller: _passCtrl,
-                    obscureText: true,
-                    decoration: const InputDecoration(hintText: 'Password', prefixIcon: Icon(Icons.lock)),
-                    validator: (v) {
-                      if (v == null || v.isEmpty) return 'Enter password';
-                      if (v.length < 4) return 'Password too short';
-                      return null;
-                    },
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: ElevatedButton(
-                      onPressed: _loading ? null : _handleLogin,
-                      child: _loading ? const CircularProgressIndicator(color: Colors.white) : const Text('Login'),
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-                  TextButton(onPressed: _demo, child: const Text('Continue as demo')),
-
-                  const SizedBox(height: 12),
-                  const Text('Sign up and Firebase integration will be added later'),
-                ],
-              ),
-            ),
-          ),
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text("SkillChain",
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 20),
+            TextField(
+                controller: emailCtrl,
+                decoration: const InputDecoration(labelText: "Email")),
+            TextField(
+                controller: passCtrl,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: "Password")),
+            const SizedBox(height: 20),
+            ElevatedButton(onPressed: login, child: const Text("Login")),
+          ],
         ),
       ),
     );
