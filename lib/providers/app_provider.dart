@@ -130,6 +130,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   void updateTaskStatus(String taskId, String status, {bool notify = true}) {
+  void updateTaskStatus(String taskId, String status) {
     final index = _tasks.indexWhere((t) => t.id == taskId);
     if (index != -1) {
       _tasks[index].status = status;
