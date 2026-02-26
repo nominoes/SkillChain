@@ -2,22 +2,22 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:skillchain/models/task_model.dart';
-import 'package:skillchain/providers/app_provider.dart';
-import 'package:skillchain/screens/student/task_detail_screen.dart';
+import '../../models/task_model.dart';
+import '../../providers/app_provider.dart';
+import 'task_detail_screen.dart';
 
 class BrowseTasksScreen extends StatelessWidget {
   const BrowseTasksScreen({super.key});
 
   Color _statusColor(String status) {
-    switch (status) {
-      case AppProvider.taskOpen:
+    switch (status.toLowerCase()) {
+      case 'open':
         return Colors.blue;
-      case AppProvider.taskAssigned:
+      case 'assigned':
         return Colors.orange;
-      case AppProvider.taskSubmitted:
+      case 'submitted':
         return Colors.purple;
-      case AppProvider.taskVerified:
+      case 'verified':
         return Colors.green;
       default:
         return Colors.grey;
@@ -34,7 +34,7 @@ class BrowseTasksScreen extends StatelessWidget {
           : ListView.separated(
               padding: const EdgeInsets.all(12),
               itemCount: tasks.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 10),
+              separatorBuilder: (_, __) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 final TaskModel task = tasks[index];
                 final color = _statusColor(task.status);
@@ -55,7 +55,7 @@ class BrowseTasksScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
+                          color: Colors.black.withOpacity(0.05),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -81,7 +81,7 @@ class BrowseTasksScreen extends StatelessWidget {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: color.withValues(alpha: 0.12),
+                                color: color.withOpacity(0.12),
                                 borderRadius: BorderRadius.circular(999),
                               ),
                               child: Text(

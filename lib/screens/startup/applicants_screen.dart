@@ -88,7 +88,7 @@ class ApplicantsScreen extends StatelessWidget {
                           runSpacing: 8,
                           children: [
                             ElevatedButton(
-                              onPressed: app.status == AppProvider.appApplied
+                              onPressed: app.status == 'applied'
                                   ? () {
                                       context.read<AppProvider>().selectApplicant(
                                         task.id,
@@ -99,7 +99,7 @@ class ApplicantsScreen extends StatelessWidget {
                               child: const Text('Assign'),
                             ),
                             ElevatedButton(
-                              onPressed: app.status == AppProvider.appSubmitted
+                              onPressed: app.status == 'submitted'
                                   ? () {
                                       context.read<AppProvider>().approveSubmission(
                                         taskId: task.id,
@@ -111,9 +111,8 @@ class ApplicantsScreen extends StatelessWidget {
                               child: const Text('Approve'),
                             ),
                             OutlinedButton(
-                              onPressed: (app.status == AppProvider.appApplied ||
-                                      app.status == AppProvider.appSelected ||
-                                      app.status == AppProvider.appSubmitted)
+                              onPressed: (app.status == 'applied' ||
+                                      app.status == 'submitted')
                                   ? () {
                                       context.read<AppProvider>().rejectApplication(
                                         taskId: task.id,

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:skillchain/providers/auth_provider.dart';
-import 'package:skillchain/services/auth_service.dart';
-import 'package:skillchain/screens/root_screen.dart';
-import 'package:skillchain/screens/auth/register_screen.dart';
+import '../../providers/auth_provider.dart';
+import '../../services/auth_service.dart';
+import '../root_screen.dart';
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
