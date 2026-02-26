@@ -10,7 +10,7 @@ class ApplicantsScreen extends StatelessWidget {
   const ApplicantsScreen({super.key, required this.task});
 
   Color _statusColor(String status) {
-    switch (status.toLowerCase()) {
+    switch (status) {
       case AppProvider.appApplied:
         return Colors.blue;
       case AppProvider.appSelected:
