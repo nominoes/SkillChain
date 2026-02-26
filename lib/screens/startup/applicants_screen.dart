@@ -1,10 +1,12 @@
 // lib/screens/startup/applicants_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../models/task_model.dart';
 import '../../providers/app_provider.dart';
 
 class ApplicantsScreen extends StatelessWidget {
-  final task;
+  final TaskModel task;
   const ApplicantsScreen({super.key, required this.task});
 
   @override
