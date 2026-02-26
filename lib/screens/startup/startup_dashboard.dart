@@ -2,12 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/task_model.dart';
-import '../../providers/app_provider.dart';
-import '../../providers/auth_provider.dart';
-import '../root_screen.dart';
-import 'applicants_screen.dart';
-import 'post_task_screen.dart';
+import 'package:skillchain/models/task_model.dart';
+import 'package:skillchain/providers/app_provider.dart';
+import 'package:skillchain/providers/auth_provider.dart';
+import 'package:skillchain/screens/root_screen.dart';
+import 'package:skillchain/screens/startup/applicants_screen.dart';
+import 'package:skillchain/screens/startup/post_task_screen.dart';
 
 class StartupDashboard extends StatelessWidget {
   const StartupDashboard({super.key});
