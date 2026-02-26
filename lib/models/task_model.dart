@@ -6,17 +6,24 @@ class TaskModel {
   final String skillRequired;
   final int hours;
   final String postedBy; // user ID of the startup who posted
-  String status;         // e.g. 'Open', 'Assigned', 'Completed'
+  String status; // e.g. 'Open', 'Assigned', 'Completed'
 
+  /// Backward-compatible constructor:
+  /// - prefer [skillRequired], but old callsites can still pass [skill]
+  /// - [postedBy] defaults to empty string for older mock callsites
   TaskModel({
     required this.id,
     required this.title,
     required this.description,
-    required this.skillRequired,
+    String? skillRequired,
+    String? skill,
     required this.hours,
-    required this.postedBy,
+    this.postedBy = '',
     this.status = 'Open',
-  });
+  }) : skillRequired = skillRequired ?? skill ?? '';
+
+  /// Backward-compatible alias used by older UI code.
+  String get skill => skillRequired;
 
   // Optional: toMap/fromMap if using a database
   Map<String, dynamic> toMap() {
@@ -33,13 +40,14 @@ class TaskModel {
 
   factory TaskModel.fromMap(Map<String, dynamic> m) {
     return TaskModel(
-      id: m['id'] as String,
-      title: m['title'] as String,
-      description: m['description'] as String,
-      skillRequired: m['skillRequired'] as String,
-      hours: m['hours'] as int,
-      postedBy: m['postedBy'] as String,
-      status: m['status'] as String,
+      id: m['id'] as String? ?? '',
+      title: m['title'] as String? ?? '',
+      description: m['description'] as String? ?? '',
+      skillRequired:
+          (m['skillRequired'] ?? m['skill'] ?? '') as String,
+      hours: (m['hours'] as num?)?.toInt() ?? 0,
+      postedBy: m['postedBy'] as String? ?? '',
+      status: m['status'] as String? ?? 'Open',
     );
   }
 }
