@@ -1,6 +1,10 @@
 // lib/screens/student/submit_work_screen.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import '../../models/task_model.dart';
+import '../../providers/app_provider.dart';
+import '../../providers/auth_provider.dart';
 
 class SubmitWorkScreen extends StatefulWidget {
   final TaskModel task;
@@ -22,15 +26,27 @@ class _SubmitWorkScreenState extends State<SubmitWorkScreen> {
 
   Future<void> _submit() async {
     if (_linkCtrl.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter link or description')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter link or description')),
+      );
       return;
     }
     setState(() => _submitting = true);
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (!mounted) return;
+
+    final userId = context.read<AuthProvider>().currentUser!.id;
+    context.read<AppProvider>().submitWork(
+      taskId: widget.task.id,
+      applicantId: userId,
+      submissionLink: _linkCtrl.text.trim(),
+    );
+
     setState(() => _submitting = false);
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Submitted successfully (mock)')));
-    // Go back to dashboard home (demo behavior)
-    Navigator.popUntil(context, (route) => route.isFirst);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Work submitted successfully')),
+    );
+    Navigator.pop(context);
   }
 
   @override
@@ -39,23 +55,32 @@ class _SubmitWorkScreenState extends State<SubmitWorkScreen> {
       appBar: AppBar(title: const Text('Submit Work')),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(children: [
-          Text('Submitting for: ${widget.task.title}', style: const TextStyle(fontWeight: FontWeight.w600)),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _linkCtrl,
-            maxLines: 5,
-            decoration: const InputDecoration(hintText: 'Paste your work link / description'),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _submitting ? null : _submit,
-              child: _submitting ? const CircularProgressIndicator(color: Colors.white) : const Text('Submit'),
+        child: Column(
+          children: [
+            Text(
+              'Submitting for: ${widget.task.title}',
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
-          )
-        ]),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _linkCtrl,
+              maxLines: 5,
+              decoration: const InputDecoration(
+                hintText: 'Paste your work link / description',
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _submitting ? null : _submit,
+                child: _submitting
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text('Submit'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
