@@ -1,11 +1,21 @@
-// lib/providers/app_provider.dart
 import 'package:flutter/material.dart';
 
-import '../models/application_model.dart';
-import '../models/badge_model.dart';
-import '../models/task_model.dart';
+import 'package:skillchain/models/application_model.dart';
+import 'package:skillchain/models/badge_model.dart';
+import 'package:skillchain/models/task_model.dart';
 
 class AppProvider extends ChangeNotifier {
+  static const String taskOpen = 'Open';
+  static const String taskAssigned = 'Assigned';
+  static const String taskSubmitted = 'Submitted';
+  static const String taskVerified = 'Verified';
+
+  static const String appApplied = 'applied';
+  static const String appSelected = 'selected';
+  static const String appSubmitted = 'submitted';
+  static const String appApproved = 'approved';
+  static const String appRejected = 'rejected';
+
   AppProvider() {
     _seedInitialTasks();
   }
@@ -25,7 +35,7 @@ class AppProvider extends ChangeNotifier {
         id: 'task_1',
         title: 'Design Instagram Post',
         description:
-            'Create a promotional Instagram post for a startup launch campaign.',
+        'Create a promotional Instagram post for a startup launch campaign.',
         skillRequired: 'Canva / Design',
         hours: 2,
         postedBy: 'u_startup_1',
@@ -42,38 +52,7 @@ class AppProvider extends ChangeNotifier {
         id: 'task_3',
         title: 'Write Product Announcement',
         description:
-            'Write a 500-word product launch announcement blog post for our website.',
-        skillRequired: 'Content Writing',
-        hours: 2,
-        postedBy: 'u_startup_1',
-      ),
-    ]);
-  }
-
-  void _seedInitialTasks() {
-    _tasks.addAll([
-      TaskModel(
-        id: 'task_1',
-        title: 'Design Instagram Post',
-        description:
-            'Create a promotional Instagram post for a startup launch campaign.',
-        skillRequired: 'Canva / Design',
-        hours: 2,
-        postedBy: 'u_startup_1',
-      ),
-      TaskModel(
-        id: 'task_2',
-        title: 'Build Login UI',
-        description: 'Implement a responsive Flutter login screen for mobile.',
-        skillRequired: 'Flutter',
-        hours: 3,
-        postedBy: 'u_startup_1',
-      ),
-      TaskModel(
-        id: 'task_3',
-        title: 'Write Product Announcement',
-        description:
-            'Write a 500-word product launch announcement blog post for our website.',
+        'Write a 500-word product launch announcement blog post for our website.',
         skillRequired: 'Content Writing',
         hours: 2,
         postedBy: 'u_startup_1',
@@ -88,14 +67,11 @@ class AppProvider extends ChangeNotifier {
 
   void applyToTask(ApplicationModel application) {
     final alreadyApplied = _applications.any(
-      (a) =>
-          a.taskId == application.taskId &&
+          (a) =>
+      a.taskId == application.taskId &&
           a.applicantId == application.applicantId,
     );
-    if (alreadyApplied) {
-      return;
-    }
-
+    if (alreadyApplied) return;
     _applications.add(application);
     notifyListeners();
   }
@@ -117,9 +93,9 @@ class AppProvider extends ChangeNotifier {
   void selectApplicant(String taskId, String applicantId) {
     for (final application in _applications.where((a) => a.taskId == taskId)) {
       application.status =
-          application.applicantId == applicantId ? 'selected' : 'rejected';
+      application.applicantId == applicantId ? appSelected : appRejected;
     }
-    updateTaskStatus(taskId, 'Assigned', notify: false);
+    _updateTaskStatus(taskId, taskAssigned, notify: false);
     notifyListeners();
   }
 
@@ -131,10 +107,9 @@ class AppProvider extends ChangeNotifier {
     final app = getApplication(taskId, applicantId);
     if (app == null) return;
 
-    app.status = 'submitted';
+    app.status = appSubmitted;
     app.submissionLink = submissionLink;
-    _updateTaskStatus(taskId, 'Submitted', notify: false);
-    updateTaskStatus(taskId, 'Submitted', notify: false);
+    _updateTaskStatus(taskId, taskSubmitted, notify: false);
     notifyListeners();
   }
 
@@ -144,11 +119,31 @@ class AppProvider extends ChangeNotifier {
     String feedback = 'Approved by startup',
   }) {
     final app = getApplication(taskId, applicantId);
-    if (app == null) return;
+    final task = _taskById(taskId);
+    if (app == null || task == null) return;
 
-    app.status = 'approved';
+    app.status = appApproved;
     app.feedback = feedback;
-    updateTaskStatus(taskId, 'Verified', notify: false);
+    _updateTaskStatus(taskId, taskVerified, notify: false);
+
+    final alreadyAwarded = _badges.any(
+          (badge) => badge.userId == applicantId && badge.taskId == taskId,
+    );
+
+    if (!alreadyAwarded) {
+      _badges.add(
+        BadgeModel(
+          id: 'badge_${DateTime.now().millisecondsSinceEpoch}',
+          userId: applicantId,
+          taskId: taskId,
+          skill: task.skillRequired,
+          verifiedBy: task.postedBy,
+          issuedDate: DateTime.now(),
+        ),
+      );
+      _reputation[applicantId] = (_reputation[applicantId] ?? 0) + 10;
+    }
+
     notifyListeners();
   }
 
@@ -160,19 +155,33 @@ class AppProvider extends ChangeNotifier {
     final app = getApplication(taskId, applicantId);
     if (app == null) return;
 
-    app.status = 'rejected';
+    app.status = appRejected;
     app.feedback = feedback;
     notifyListeners();
   }
 
-  void updateTaskStatus(String taskId, String status, {bool notify = true}) {
-  void updateTaskStatus(String taskId, String status) {
+  int getReputationForUser(String userId) => _reputation[userId] ?? 0;
+
+  List<BadgeModel> getBadgesForUser(String userId) {
+    return _badges.where((badge) => badge.userId == userId).toList();
+  }
+
+  List<ApplicationModel> get approvedApplications {
+    return _applications.where((a) => a.status == appApproved).toList();
+  }
+
+  TaskModel? _taskById(String taskId) {
+    for (final task in _tasks) {
+      if (task.id == taskId) return task;
+    }
+    return null;
+  }
+
+  void _updateTaskStatus(String taskId, String status, {bool notify = true}) {
     final index = _tasks.indexWhere((t) => t.id == taskId);
     if (index != -1) {
       _tasks[index].status = status;
-      if (notify) {
-        notifyListeners();
-      }
+      if (notify) notifyListeners();
     }
   }
 }

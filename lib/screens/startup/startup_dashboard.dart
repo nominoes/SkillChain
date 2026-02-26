@@ -16,7 +16,7 @@ class StartupDashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentUser = context.read<AuthProvider>().currentUser!;
     final userId = currentUser.id;
-    final userId = context.read<AuthProvider>().currentUser!.id;
+   // final userId = context.read<AuthProvider>().currentUser!.id;
     final tasks = context
         .watch<AppProvider>()
         .tasks
@@ -66,12 +66,6 @@ class StartupDashboard extends StatelessWidget {
               color: Colors.indigo.shade50,
               borderRadius: BorderRadius.circular(12),
             ),
-            margin: const EdgeInsets.fromLTRB(12, 12, 12, 8),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.indigo.shade50,
-              borderRadius: BorderRadius.circular(12),
-            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -81,6 +75,7 @@ class StartupDashboard extends StatelessWidget {
               ],
             ),
           ),
+
           Expanded(
             child: tasks.isEmpty
                 ? const Center(child: Text('You have not posted any tasks yet'))
