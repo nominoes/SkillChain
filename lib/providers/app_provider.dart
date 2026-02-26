@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/application_model.dart';
+import '../models/badge_model.dart';
 import '../models/task_model.dart';
 
 class AppProvider extends ChangeNotifier {
@@ -11,9 +12,43 @@ class AppProvider extends ChangeNotifier {
 
   final List<TaskModel> _tasks = [];
   final List<ApplicationModel> _applications = [];
+  final List<BadgeModel> _badges = [];
+  final Map<String, int> _reputation = {};
 
   List<TaskModel> get tasks => List.unmodifiable(_tasks);
   List<ApplicationModel> get applications => List.unmodifiable(_applications);
+  List<BadgeModel> get badges => List.unmodifiable(_badges);
+
+  void _seedInitialTasks() {
+    _tasks.addAll([
+      TaskModel(
+        id: 'task_1',
+        title: 'Design Instagram Post',
+        description:
+            'Create a promotional Instagram post for a startup launch campaign.',
+        skillRequired: 'Canva / Design',
+        hours: 2,
+        postedBy: 'u_startup_1',
+      ),
+      TaskModel(
+        id: 'task_2',
+        title: 'Build Login UI',
+        description: 'Implement a responsive Flutter login screen for mobile.',
+        skillRequired: 'Flutter',
+        hours: 3,
+        postedBy: 'u_startup_1',
+      ),
+      TaskModel(
+        id: 'task_3',
+        title: 'Write Product Announcement',
+        description:
+            'Write a 500-word product launch announcement blog post for our website.',
+        skillRequired: 'Content Writing',
+        hours: 2,
+        postedBy: 'u_startup_1',
+      ),
+    ]);
+  }
 
   void _seedInitialTasks() {
     _tasks.addAll([
@@ -98,6 +133,7 @@ class AppProvider extends ChangeNotifier {
 
     app.status = 'submitted';
     app.submissionLink = submissionLink;
+    _updateTaskStatus(taskId, 'Submitted', notify: false);
     updateTaskStatus(taskId, 'Submitted', notify: false);
     notifyListeners();
   }

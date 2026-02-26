@@ -25,7 +25,40 @@ class AdminDashboard extends StatelessWidget {
           ),
         ],
       ),
-      body: const Center(child: Text('Admin functionalities go here')),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 380),
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.shield_outlined, size: 42),
+                  const SizedBox(height: 10),
+                  const Text('Admin Controls', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  const Text('Review verified submissions and platform quality checks.'),
+                  const SizedBox(height: 14),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const VerificationScreen()),
+                        );
+                      },
+                      icon: const Icon(Icons.fact_check),
+                      label: const Text('Open Verification Queue'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
