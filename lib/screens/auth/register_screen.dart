@@ -30,6 +30,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final user = await _auth.register(
       name: name, email: email, password: password, role: _role,
     );
+    if (!mounted) return;
     setState(() => _loading = false);
 
     if (user == null) {
@@ -109,7 +110,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  value: _role,
+                  initialValue: _role,
                   decoration: const InputDecoration(prefixIcon: Icon(Icons.person_outline)),
                   items: const [
                     DropdownMenuItem(value: 'student', child: Text('Student')),

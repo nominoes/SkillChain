@@ -1,5 +1,6 @@
 // lib/services/firestore_service.dart
 import 'dart:async';
+
 import '../models/task_model.dart';
 
 class FirestoreService {
@@ -9,9 +10,11 @@ class FirestoreService {
       TaskModel(
         id: '1',
         title: 'Design Instagram Post',
-        description: 'Create a promotional Instagram post for the startup using Canva.',
+        description:
+            'Create a promotional Instagram post for the startup using Canva.',
         skillRequired: 'Design',
         hours: 2,
+        postedBy: 'u_startup_1',
       ),
       TaskModel(
         id: '2',
@@ -19,13 +22,16 @@ class FirestoreService {
         description: 'Create a responsive login screen using Flutter (mobile + web).',
         skillRequired: 'Flutter',
         hours: 3,
+        postedBy: 'u_startup_1',
       ),
       TaskModel(
         id: '3',
         title: 'Write Blog Post',
-        description: 'Write a 500-word blog post about micro-internships and their benefits.',
+        description:
+            'Write a 500-word blog post about micro-internships and their benefits.',
         skillRequired: 'Content Writing',
         hours: 1,
+        postedBy: 'u_startup_1',
       ),
     ];
   }
