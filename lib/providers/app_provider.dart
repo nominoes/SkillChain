@@ -69,11 +69,74 @@ class AppProvider extends ChangeNotifier {
     return _applications.where((a) => a.taskId == taskId).toList();
   }
 
+  ApplicationModel? getApplication(String taskId, String applicantId) {
+    for (final application in _applications) {
+      if (application.taskId == taskId &&
+          application.applicantId == applicantId) {
+        return application;
+      }
+    }
+    return null;
+  }
+
+  void selectApplicant(String taskId, String applicantId) {
+    for (final application in _applications.where((a) => a.taskId == taskId)) {
+      application.status =
+          application.applicantId == applicantId ? 'selected' : 'rejected';
+    }
+    updateTaskStatus(taskId, 'Assigned', notify: false);
+    notifyListeners();
+  }
+
+  void submitWork({
+    required String taskId,
+    required String applicantId,
+    required String submissionLink,
+  }) {
+    final app = getApplication(taskId, applicantId);
+    if (app == null) return;
+
+    app.status = 'submitted';
+    app.submissionLink = submissionLink;
+    updateTaskStatus(taskId, 'Submitted', notify: false);
+    notifyListeners();
+  }
+
+  void approveSubmission({
+    required String taskId,
+    required String applicantId,
+    String feedback = 'Approved by startup',
+  }) {
+    final app = getApplication(taskId, applicantId);
+    if (app == null) return;
+
+    app.status = 'approved';
+    app.feedback = feedback;
+    updateTaskStatus(taskId, 'Verified', notify: false);
+    notifyListeners();
+  }
+
+  void rejectApplication({
+    required String taskId,
+    required String applicantId,
+    String feedback = 'Not selected',
+  }) {
+    final app = getApplication(taskId, applicantId);
+    if (app == null) return;
+
+    app.status = 'rejected';
+    app.feedback = feedback;
+    notifyListeners();
+  }
+
+  void updateTaskStatus(String taskId, String status, {bool notify = true}) {
   void updateTaskStatus(String taskId, String status) {
     final index = _tasks.indexWhere((t) => t.id == taskId);
     if (index != -1) {
       _tasks[index].status = status;
-      notifyListeners();
+      if (notify) {
+        notifyListeners();
+      }
     }
   }
 }
