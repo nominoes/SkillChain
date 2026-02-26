@@ -50,6 +50,37 @@ class AppProvider extends ChangeNotifier {
     ]);
   }
 
+  void _seedInitialTasks() {
+    _tasks.addAll([
+      TaskModel(
+        id: 'task_1',
+        title: 'Design Instagram Post',
+        description:
+            'Create a promotional Instagram post for a startup launch campaign.',
+        skillRequired: 'Canva / Design',
+        hours: 2,
+        postedBy: 'u_startup_1',
+      ),
+      TaskModel(
+        id: 'task_2',
+        title: 'Build Login UI',
+        description: 'Implement a responsive Flutter login screen for mobile.',
+        skillRequired: 'Flutter',
+        hours: 3,
+        postedBy: 'u_startup_1',
+      ),
+      TaskModel(
+        id: 'task_3',
+        title: 'Write Product Announcement',
+        description:
+            'Write a 500-word product launch announcement blog post for our website.',
+        skillRequired: 'Content Writing',
+        hours: 2,
+        postedBy: 'u_startup_1',
+      ),
+    ]);
+  }
+
   void addTask(TaskModel task) {
     _tasks.add(task);
     notifyListeners();
@@ -88,7 +119,7 @@ class AppProvider extends ChangeNotifier {
       application.status =
           application.applicantId == applicantId ? 'selected' : 'rejected';
     }
-    _updateTaskStatus(taskId, 'Assigned', notify: false);
+    updateTaskStatus(taskId, 'Assigned', notify: false);
     notifyListeners();
   }
 
@@ -103,6 +134,7 @@ class AppProvider extends ChangeNotifier {
     app.status = 'submitted';
     app.submissionLink = submissionLink;
     _updateTaskStatus(taskId, 'Submitted', notify: false);
+    updateTaskStatus(taskId, 'Submitted', notify: false);
     notifyListeners();
   }
 
@@ -112,30 +144,11 @@ class AppProvider extends ChangeNotifier {
     String feedback = 'Approved by startup',
   }) {
     final app = getApplication(taskId, applicantId);
-    TaskModel? task;
-    for (final item in _tasks) {
-      if (item.id == taskId) {
-        task = item;
-        break;
-      }
-    }
-    if (app == null || task == null) return;
+    if (app == null) return;
 
     app.status = 'approved';
     app.feedback = feedback;
-    _updateTaskStatus(taskId, 'Verified', notify: false);
-
-    _badges.add(
-      BadgeModel(
-        id: 'badge_${DateTime.now().millisecondsSinceEpoch}',
-        userId: applicantId,
-        taskId: taskId,
-        skill: task.skillRequired,
-        verifiedBy: task.postedBy,
-        issuedDate: DateTime.now(),
-      ),
-    );
-    _reputation[applicantId] = (_reputation[applicantId] ?? 0) + 10;
+    updateTaskStatus(taskId, 'Verified', notify: false);
     notifyListeners();
   }
 
@@ -152,17 +165,8 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  int getReputationForUser(String userId) => _reputation[userId] ?? 0;
-
-  List<BadgeModel> getBadgesForUser(String userId) {
-    return _badges.where((badge) => badge.userId == userId).toList();
-  }
-
-  List<ApplicationModel> get approvedApplications {
-    return _applications.where((a) => a.status == 'approved').toList();
-  }
-
-  void _updateTaskStatus(String taskId, String status, {bool notify = true}) {
+  void updateTaskStatus(String taskId, String status, {bool notify = true}) {
+  void updateTaskStatus(String taskId, String status) {
     final index = _tasks.indexWhere((t) => t.id == taskId);
     if (index != -1) {
       _tasks[index].status = status;
