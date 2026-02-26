@@ -1,11 +1,22 @@
 // lib/providers/app_provider.dart
 import 'package:flutter/material.dart';
 
-import '../models/application_model.dart';
-import '../models/badge_model.dart';
-import '../models/task_model.dart';
+import 'package:skillchain/models/application_model.dart';
+import 'package:skillchain/models/badge_model.dart';
+import 'package:skillchain/models/task_model.dart';
 
 class AppProvider extends ChangeNotifier {
+  static const String taskOpen = 'Open';
+  static const String taskAssigned = 'Assigned';
+  static const String taskSubmitted = 'Submitted';
+  static const String taskVerified = 'Verified';
+
+  static const String appApplied = 'applied';
+  static const String appSelected = 'selected';
+  static const String appSubmitted = 'submitted';
+  static const String appApproved = 'approved';
+  static const String appRejected = 'rejected';
+
   AppProvider() {
     _seedInitialTasks();
   }
@@ -86,9 +97,9 @@ class AppProvider extends ChangeNotifier {
   void selectApplicant(String taskId, String applicantId) {
     for (final application in _applications.where((a) => a.taskId == taskId)) {
       application.status =
-          application.applicantId == applicantId ? 'selected' : 'rejected';
+          application.applicantId == applicantId ? appSelected : appRejected;
     }
-    _updateTaskStatus(taskId, 'Assigned', notify: false);
+    _updateTaskStatus(taskId, taskAssigned, notify: false);
     notifyListeners();
   }
 
@@ -100,9 +111,9 @@ class AppProvider extends ChangeNotifier {
     final app = getApplication(taskId, applicantId);
     if (app == null) return;
 
-    app.status = 'submitted';
+    app.status = appSubmitted;
     app.submissionLink = submissionLink;
-    _updateTaskStatus(taskId, 'Submitted', notify: false);
+    _updateTaskStatus(taskId, taskSubmitted, notify: false);
     notifyListeners();
   }
 
@@ -115,9 +126,9 @@ class AppProvider extends ChangeNotifier {
     final task = _taskById(taskId);
     if (app == null || task == null) return;
 
-    app.status = 'approved';
+    app.status = appApproved;
     app.feedback = feedback;
-    _updateTaskStatus(taskId, 'Verified', notify: false);
+    _updateTaskStatus(taskId, taskVerified, notify: false);
 
     final alreadyAwarded = _badges.any(
       (badge) => badge.userId == applicantId && badge.taskId == taskId,
@@ -148,7 +159,7 @@ class AppProvider extends ChangeNotifier {
     final app = getApplication(taskId, applicantId);
     if (app == null) return;
 
-    app.status = 'rejected';
+    app.status = appRejected;
     app.feedback = feedback;
     notifyListeners();
   }
@@ -160,7 +171,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   List<ApplicationModel> get approvedApplications {
-    return _applications.where((a) => a.status == 'approved').toList();
+    return _applications.where((a) => a.status == appApproved).toList();
   }
 
   TaskModel? _taskById(String taskId) {

@@ -2,22 +2,22 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/task_model.dart';
-import '../../providers/app_provider.dart';
-import 'task_detail_screen.dart';
+import 'package:skillchain/models/task_model.dart';
+import 'package:skillchain/providers/app_provider.dart';
+import 'package:skillchain/screens/student/task_detail_screen.dart';
 
 class BrowseTasksScreen extends StatelessWidget {
   const BrowseTasksScreen({super.key});
 
   Color _statusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'open':
+    switch (status) {
+      case AppProvider.taskOpen:
         return Colors.blue;
-      case 'assigned':
+      case AppProvider.taskAssigned:
         return Colors.orange;
-      case 'submitted':
+      case AppProvider.taskSubmitted:
         return Colors.purple;
-      case 'verified':
+      case AppProvider.taskVerified:
         return Colors.green;
       default:
         return Colors.grey;

@@ -2,28 +2,28 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/application_model.dart';
-import '../../models/task_model.dart';
-import '../../providers/app_provider.dart';
-import '../../providers/auth_provider.dart';
-import 'submit_work_screen.dart';
+import 'package:skillchain/models/application_model.dart';
+import 'package:skillchain/models/task_model.dart';
+import 'package:skillchain/providers/app_provider.dart';
+import 'package:skillchain/providers/auth_provider.dart';
+import 'package:skillchain/screens/student/submit_work_screen.dart';
 
 class TaskDetailScreen extends StatelessWidget {
   final TaskModel task;
   const TaskDetailScreen({super.key, required this.task});
 
   Color _statusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'open':
+    switch (status) {
+      case AppProvider.taskOpen:
         return Colors.blue;
-      case 'assigned':
+      case AppProvider.taskAssigned:
         return Colors.orange;
-      case 'submitted':
+      case AppProvider.taskSubmitted:
         return Colors.deepPurple;
-      case 'verified':
-      case 'approved':
+      case AppProvider.taskVerified:
+      case AppProvider.appApproved:
         return Colors.green;
-      case 'rejected':
+      case AppProvider.appRejected:
         return Colors.red;
       default:
         return Colors.grey;
@@ -114,7 +114,7 @@ class TaskDetailScreen extends StatelessWidget {
     ApplicationModel? myApplication,
   ) {
     if (myApplication == null) {
-      final canApply = task.status.toLowerCase() == 'open';
+      final canApply = task.status == AppProvider.taskOpen;
       return SizedBox(
         width: double.infinity,
         child: ElevatedButton(
@@ -136,7 +136,7 @@ class TaskDetailScreen extends StatelessWidget {
       );
     }
 
-    if (myApplication.status == 'selected' || myApplication.status == 'submitted') {
+    if (myApplication.status == AppProvider.appSelected || myApplication.status == AppProvider.appSubmitted) {
       return SizedBox(
         width: double.infinity,
         child: ElevatedButton.icon(
@@ -150,7 +150,7 @@ class TaskDetailScreen extends StatelessWidget {
           },
           icon: const Icon(Icons.upload_file),
           label: Text(
-            myApplication.status == 'submitted'
+            myApplication.status == AppProvider.appSubmitted
                 ? 'Update Submission'
                 : 'Submit Work',
           ),

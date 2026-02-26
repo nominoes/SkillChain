@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/task_model.dart';
-import '../../providers/app_provider.dart';
+import 'package:skillchain/models/task_model.dart';
+import 'package:skillchain/providers/app_provider.dart';
 
 class ApplicantsScreen extends StatelessWidget {
   final TaskModel task;
@@ -11,15 +11,15 @@ class ApplicantsScreen extends StatelessWidget {
 
   Color _statusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'applied':
+      case AppProvider.appApplied:
         return Colors.blue;
-      case 'selected':
+      case AppProvider.appSelected:
         return Colors.orange;
-      case 'submitted':
+      case AppProvider.appSubmitted:
         return Colors.deepPurple;
-      case 'approved':
+      case AppProvider.appApproved:
         return Colors.green;
-      case 'rejected':
+      case AppProvider.appRejected:
         return Colors.red;
       default:
         return Colors.grey;
@@ -88,7 +88,7 @@ class ApplicantsScreen extends StatelessWidget {
                           runSpacing: 8,
                           children: [
                             ElevatedButton(
-                              onPressed: app.status == 'applied'
+                              onPressed: app.status == AppProvider.appApplied
                                   ? () {
                                       context.read<AppProvider>().selectApplicant(
                                         task.id,
@@ -99,7 +99,7 @@ class ApplicantsScreen extends StatelessWidget {
                               child: const Text('Assign'),
                             ),
                             ElevatedButton(
-                              onPressed: app.status == 'submitted'
+                              onPressed: app.status == AppProvider.appSubmitted
                                   ? () {
                                       context.read<AppProvider>().approveSubmission(
                                         taskId: task.id,
@@ -111,8 +111,9 @@ class ApplicantsScreen extends StatelessWidget {
                               child: const Text('Approve'),
                             ),
                             OutlinedButton(
-                              onPressed: (app.status == 'applied' ||
-                                      app.status == 'submitted')
+                              onPressed: (app.status == AppProvider.appApplied ||
+                                      app.status == AppProvider.appSelected ||
+                                      app.status == AppProvider.appSubmitted)
                                   ? () {
                                       context.read<AppProvider>().rejectApplication(
                                         taskId: task.id,
