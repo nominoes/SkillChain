@@ -16,6 +16,7 @@ class StartupDashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentUser = context.read<AuthProvider>().currentUser!;
     final userId = currentUser.id;
+    final userId = context.read<AuthProvider>().currentUser!.id;
     final tasks = context
         .watch<AppProvider>()
         .tasks
@@ -60,6 +61,12 @@ class StartupDashboard extends StatelessWidget {
           ),
           Container(
             margin: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.indigo.shade50,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            margin: const EdgeInsets.fromLTRB(12, 12, 12, 8),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.indigo.shade50,
