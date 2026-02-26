@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
-import 'root_screen.dart';
+
+import 'package:skillchain/providers/auth_provider.dart';
+import 'package:skillchain/screens/root_screen.dart';
 
 class AdminDashboard extends StatelessWidget {
   const AdminDashboard({super.key});
