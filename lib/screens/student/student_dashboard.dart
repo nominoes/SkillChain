@@ -1,6 +1,8 @@
 // lib/screens/student/student_dashboard.dart
 import 'package:flutter/material.dart';
+
 import 'browse_tasks_screen.dart';
+import 'dashboard_home.dart';
 import 'profile_screen.dart';
 
 class StudentDashboard extends StatefulWidget {
@@ -13,10 +15,12 @@ class StudentDashboard extends StatefulWidget {
 class _StudentDashboardState extends State<StudentDashboard> {
   int _currentIndex = 0;
   static const List<Widget> _pages = <Widget>[
+    DashboardHome(),
     BrowseTasksScreen(),
     ProfileScreen(),
   ];
   static const List<String> _titles = <String>[
+    'Dashboard',
     'Browse Tasks',
     'Profile',
   ];
@@ -36,6 +40,10 @@ class _StudentDashboardState extends State<StudentDashboard> {
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard_outlined),
+            label: 'Home',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: 'Browse'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],

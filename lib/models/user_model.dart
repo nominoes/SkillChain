@@ -7,7 +7,7 @@ class UserModel {
 
   UserModel({
     required this.id,
-    required this.name,
+    this.name = '',
     required this.email,
     required this.role,
   });
